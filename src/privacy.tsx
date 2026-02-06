@@ -2,7 +2,7 @@
 import './types';
 import * as React from 'react';
 import ReactDOM from 'react-dom/client';
-import PrivacyPolicyPage from './components/PrivacyPolicyPage';
+import PrivacyPolicyPage from './pages/Legal/PrivacyPolicyPage';
 
 const rootElement = document.getElementById('root');
 if (!rootElement) {

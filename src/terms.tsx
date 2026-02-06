@@ -2,7 +2,7 @@
 import './types';
 import * as React from 'react';
 import ReactDOM from 'react-dom/client';
-import TermsOfServicePage from './components/TermsOfServicePage';
+import TermsOfServicePage from './pages/Legal/TermsOfServicePage';
 
 const rootElement = document.getElementById('root');
 if (!rootElement) {

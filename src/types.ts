@@ -6,7 +6,7 @@ declare global {
   // Fix: Add JSX namespace to declare the 'iconify-icon' custom element.
   // This resolves TypeScript errors about the property not existing on JSX.IntrinsicElements.
   namespace JSX {
-    interface IntrinsicElements {
+    interface IntrinsicElements extends React.JSX.IntrinsicElements {
       'iconify-icon': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & {
         icon: string;
       };
