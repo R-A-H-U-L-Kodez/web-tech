@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { Suspense } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Header from './components/Header';
 import HeroSection from './components/HeroSection';
@@ -13,11 +13,20 @@ import AuroraBackground from './components/AuroraBackground';
 import ClickSpark from './components/ClickSpark';
 import ScrollToTop from './components/ScrollToTop';
 import { ThemeProvider } from './context/ThemeContext';
-import AboutPage from './components/AboutPage';
-import ResourcesPage from './components/ResourcesPage';
-import CareersPage from './components/CareersPage';
-import PrivacyPolicyPage from './components/PrivacyPolicyPage';
-import TermsOfServicePage from './components/TermsOfServicePage';
+
+// Lazy load route-based components to reduce initial bundle
+const AboutPage = React.lazy(() => import('./components/AboutPage'));
+const ResourcesPage = React.lazy(() => import('./components/ResourcesPage'));
+const CareersPage = React.lazy(() => import('./components/CareersPage'));
+const PrivacyPolicyPage = React.lazy(() => import('./components/PrivacyPolicyPage'));
+const TermsOfServicePage = React.lazy(() => import('./components/TermsOfServicePage'));
+
+// Fallback component for lazy loading
+const LoadingFallback = () => (
+  <div className="flex items-center justify-center min-h-screen">
+    <div className="animate-pulse text-slate-600 dark:text-slate-400">Loading...</div>
+  </div>
+);
 
 // Home page component
 const HomePage = () => (
@@ -61,11 +70,11 @@ function App() {
           <AuroraBackground />
           <Routes>
             <Route path="/" element={<HomePage />} />
-            <Route path="/about" element={<PageLayout><AboutPage /></PageLayout>} />
-            <Route path="/resources" element={<PageLayout><ResourcesPage /></PageLayout>} />
-            <Route path="/careers" element={<PageLayout><CareersPage /></PageLayout>} />
-            <Route path="/privacy" element={<PageLayout isPrivacyPage={true}><PrivacyPolicyPage /></PageLayout>} />
-            <Route path="/terms" element={<PageLayout isPrivacyPage={true}><TermsOfServicePage /></PageLayout>} />
+            <Route path="/about" element={<PageLayout><Suspense fallback={<LoadingFallback />}><AboutPage /></Suspense></PageLayout>} />
+            <Route path="/resources" element={<PageLayout><Suspense fallback={<LoadingFallback />}><ResourcesPage /></Suspense></PageLayout>} />
+            <Route path="/careers" element={<PageLayout><Suspense fallback={<LoadingFallback />}><CareersPage /></Suspense></PageLayout>} />
+            <Route path="/privacy" element={<PageLayout isPrivacyPage={true}><Suspense fallback={<LoadingFallback />}><PrivacyPolicyPage /></Suspense></PageLayout>} />
+            <Route path="/terms" element={<PageLayout isPrivacyPage={true}><Suspense fallback={<LoadingFallback />}><TermsOfServicePage /></Suspense></PageLayout>} />
           </Routes>
         </ClickSpark>
       </BrowserRouter>

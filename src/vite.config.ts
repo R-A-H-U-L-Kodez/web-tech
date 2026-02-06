@@ -13,4 +13,30 @@ export default defineConfig(() => ({
       '@': path.resolve(__dirname, '.'),
     },
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
+          'pages': [
+            './src/components/AboutPage.tsx',
+            './src/components/ResourcesPage.tsx',
+            './src/components/CareersPage.tsx',
+            './src/components/PrivacyPolicyPage.tsx',
+            './src/components/TermsOfServicePage.tsx'
+          ]
+        }
+      }
+    },
+    // Optimize asset filename hashing for long-term caching
+    assetsDir: 'assets',
+    // Generate content hash for all assets
+    sourcemap: false,
+    minify: 'terser',
+    terserOptions: {
+      compress: {
+        drop_console: true,
+      },
+    },
+  }
 }));

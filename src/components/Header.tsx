@@ -20,34 +20,61 @@ const Header: React.FC<HeaderProps> = ({ isPrivacyPage = false }) => {
             return;
         }
 
-        const handleScroll = () => {
-            const sections = ['services', 'process', 'impact', 'contact'];
-            const scrollPosition = window.scrollY + 200; 
+        const sections = ['services', 'process', 'impact', 'contact'];
+        const observers: { [key: string]: IntersectionObserver } = {};
+        const visibilityMap: Record<string, { top: number; isIntersecting: boolean }> = {};
 
-            let current = '';
-            
-            if (window.scrollY < 100) {
-                setActiveSection('');
+        const updateActiveSection = () => {
+            const visible = sections
+                .map((id) => ({ id, ...visibilityMap[id] }))
+                .filter((item) => item && item.isIntersecting);
+
+            if (visible.length === 0) {
                 return;
             }
 
-            for (const section of sections) {
-                const element = document.getElementById(section);
-                if (element) {
-                    const { offsetTop, offsetHeight } = element;
-                    if (scrollPosition >= offsetTop && scrollPosition < offsetTop + offsetHeight) {
-                        current = section;
-                        break; 
-                    }
-                }
-            }
-            setActiveSection(current);
+            const positiveTop = visible.filter((item) => item.top >= 0);
+            const active = positiveTop.length > 0
+                ? positiveTop.sort((a, b) => a.top - b.top)[0]
+                : visible.sort((a, b) => b.top - a.top)[0];
+
+            setActiveSection(active.id);
         };
 
-        window.addEventListener('scroll', handleScroll);
-        handleScroll();
-        
-        return () => window.removeEventListener('scroll', handleScroll);
+        const handleScrollTopReset = () => {
+            if (window.scrollY < 100) {
+                setActiveSection('');
+            }
+        };
+
+        sections.forEach((section) => {
+            const element = document.getElementById(section);
+            if (!element) return;
+
+            const observer = new IntersectionObserver(
+                (entries) => {
+                    entries.forEach((entry) => {
+                        visibilityMap[section] = {
+                            top: entry.boundingClientRect.top,
+                            isIntersecting: entry.isIntersecting,
+                        };
+                    });
+                    updateActiveSection();
+                },
+                { threshold: [0, 0.25, 0.5, 0.75, 1], rootMargin: '-20% 0px -55% 0px' }
+            );
+
+            observer.observe(element);
+            observers[section] = observer;
+        });
+
+        window.addEventListener('scroll', handleScrollTopReset, { passive: true });
+        handleScrollTopReset();
+
+        return () => {
+            Object.values(observers).forEach((observer) => observer.disconnect());
+            window.removeEventListener('scroll', handleScrollTopReset);
+        };
     }, [isPrivacyPage]);
 
     const navItems = [

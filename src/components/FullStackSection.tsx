@@ -17,15 +17,47 @@ const SpotlightCard: React.FC<SpotlightCardProps> = ({ icon, iconBgClass, iconCo
     const divRef = useRef<HTMLDivElement>(null);
     const [position, setPosition] = useState({ x: 0, y: 0 });
     const [opacity, setOpacity] = useState(0);
+    const rafRef = useRef<number | null>(null);
+    const rectRef = useRef<DOMRect | null>(null);
 
     const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
         if (!divRef.current) return;
-        const rect = divRef.current.getBoundingClientRect();
-        setPosition({ x: e.clientX - rect.left, y: e.clientY - rect.top });
+        
+        // Store the rect reference on first move to avoid repeated getBoundingClientRect calls
+        if (!rectRef.current) {
+            rectRef.current = divRef.current.getBoundingClientRect();
+        }
+
+        if (rafRef.current !== null) {
+            cancelAnimationFrame(rafRef.current);
+        }
+
+        // Use RAF to batch position updates and avoid forced reflows on every mouse move
+        rafRef.current = requestAnimationFrame(() => {
+            if (rectRef.current) {
+                setPosition({ 
+                    x: e.clientX - rectRef.current.left, 
+                    y: e.clientY - rectRef.current.top 
+                });
+            }
+        });
     };
 
-    const handleMouseEnter = () => setOpacity(1);
-    const handleMouseLeave = () => setOpacity(0);
+    const handleMouseEnter = () => {
+        // Update rect reference on enter
+        if (divRef.current) {
+            rectRef.current = divRef.current.getBoundingClientRect();
+        }
+        setOpacity(1);
+    };
+
+    const handleMouseLeave = () => {
+        rectRef.current = null;
+        if (rafRef.current !== null) {
+            cancelAnimationFrame(rafRef.current);
+        }
+        setOpacity(0);
+    };
 
     return (
         <AnimatedInView delay={delay} className="h-full" animationType={delay % 200 === 0 ? 'fade-left' : delay % 150 === 0 ? 'fade-right' : 'zoom-in'}>

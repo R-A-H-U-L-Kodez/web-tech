@@ -1,19 +1,22 @@
 # Custom Headers for Netlify/Vercel Deployment
 # Optimized for SEO and Security
 
-/*
-  # Security Headers
-  X-Frame-Options: SAMEORIGIN
-  X-Content-Type-Options: nosniff
-  X-XSS-Protection: 1; mode=block
-  Referrer-Policy: strict-origin-when-cross-origin
-  Permissions-Policy: geolocation=(), microphone=(), camera=()
-
-  # Cache Control
+# HTML files - no cache, always check for updates
+/
+  Cache-Control: public, max-age=0, must-revalidate
+/*.html
   Cache-Control: public, max-age=0, must-revalidate
 
-# Static assets caching
+# Hashed assets (Vite adds hashes) - long cache
 /assets/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Vendor chunks - long cache (Vite versioned)
+/assets/vendor*
+  Cache-Control: public, max-age=31536000, immutable
+
+# React vendor chunk - very long cache
+/assets/pages*
   Cache-Control: public, max-age=31536000, immutable
 
 /*.css
@@ -22,6 +25,7 @@
 /*.js
   Cache-Control: public, max-age=31536000, immutable
 
+# Optimized image caching
 /*.jpg
   Cache-Control: public, max-age=31536000, immutable
 
@@ -40,15 +44,38 @@
 /*.webp
   Cache-Control: public, max-age=31536000, immutable
 
+/*.ico
+  Cache-Control: public, max-age=31536000, immutable
+
+# Font caching - very aggressive (1 year)
 /*.woff
   Cache-Control: public, max-age=31536000, immutable
 
 /*.woff2
   Cache-Control: public, max-age=31536000, immutable
 
-# SEO files - shorter cache
+/*.ttf
+  Cache-Control: public, max-age=31536000, immutable
+
+/*.eot
+  Cache-Control: public, max-age=31536000, immutable
+
+# SEO files - moderate cache (1 hour)
 /sitemap.xml
   Cache-Control: public, max-age=3600
 
 /robots.txt
   Cache-Control: public, max-age=3600
+
+/manifest.json
+  Cache-Control: public, max-age=3600
+
+/*
+  # Security Headers
+  X-Frame-Options: SAMEORIGIN
+  X-Content-Type-Options: nosniff
+  X-XSS-Protection: 1; mode=block
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: geolocation=(), microphone=(), camera=()
+  # Compression
+  Content-Encoding: gzip
