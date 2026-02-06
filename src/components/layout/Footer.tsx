@@ -31,10 +31,13 @@ const Footer: React.FC = () => {
                                             <iconify-icon icon="logos:twitter" className="text-sm grayscale opacity-70 transition-all group-hover:grayscale-0 group-hover:opacity-100"></iconify-icon>
                                         </a>
                                         <a href="https://instagram.com/i_intern_agency" target="_blank" rel="noopener noreferrer" aria-label="Follow us on Instagram" className="group flex h-9 w-9 items-center justify-center rounded-lg bg-slate-200 dark:bg-white/5 text-slate-500 dark:text-zinc-300 ring-1 ring-slate-300 dark:ring-white/10 transition hover:bg-slate-300 dark:hover:bg-white/10">
-                                            <iconify-icon icon="logos:instagram-icon" className="text-sm grayscale opacity-70 transition-all group-hover:grayscale-0 group-hover:opacity-100"></iconify-icon>
+                                            <iconify-icon icon="mdi:instagram" className="text-sm grayscale opacity-70 transition-all group-hover:grayscale-0 group-hover:opacity-100"></iconify-icon>
                                         </a>
                                         <a href="https://linkedin.com/company/i-intern-agency" target="_blank" rel="noopener noreferrer" aria-label="Follow us on LinkedIn" className="group flex h-9 w-9 items-center justify-center rounded-lg bg-slate-200 dark:bg-white/5 text-slate-500 dark:text-zinc-300 ring-1 ring-slate-300 dark:ring-white/10 transition hover:bg-slate-300 dark:hover:bg-white/10">
                                             <iconify-icon icon="logos:linkedin-icon" className="text-sm grayscale opacity-70 transition-all group-hover:grayscale-0 group-hover:opacity-100"></iconify-icon>
+                                        </a>
+                                        <a href="https://facebook.com/i-intern-agency" target="_blank" rel="noopener noreferrer" aria-label="Follow us on Facebook" className="group flex h-9 w-9 items-center justify-center rounded-lg bg-slate-200 dark:bg-white/5 text-slate-500 dark:text-zinc-300 ring-1 ring-slate-300 dark:ring-white/10 transition hover:bg-slate-300 dark:hover:bg-white/10">
+                                            <iconify-icon icon="logos:facebook" className="text-sm grayscale opacity-70 transition-all group-hover:grayscale-0 group-hover:opacity-100"></iconify-icon>
                                         </a>
                                     </div>
                                 </div>
