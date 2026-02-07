@@ -1,8 +1,11 @@
 ﻿import path from 'path';
+import { fileURLToPath } from 'url';
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
-export default defineConfig(() => ({
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+export default defineConfig({
   server: {
     port: 3000,
     host: '0.0.0.0',
@@ -19,18 +22,16 @@ export default defineConfig(() => ({
         manualChunks: {
           'react-vendor': ['react', 'react-dom', 'react-router-dom'],
           'pages': [
-            './src/components/AboutPage.tsx',
-            './src/components/ResourcesPage.tsx',
-            './src/components/CareersPage.tsx',
-            './src/components/PrivacyPolicyPage.tsx',
-            './src/components/TermsOfServicePage.tsx'
+            './src/pages/About/AboutPage.tsx',
+            './src/pages/Resources/ResourcesPage.tsx',
+            './src/pages/Careers/CareersPage.tsx',
+            './src/pages/Legal/PrivacyPolicyPage.tsx',
+            './src/pages/Legal/TermsOfServicePage.tsx'
           ]
         }
       }
     },
-    // Optimize asset filename hashing for long-term caching
     assetsDir: 'assets',
-    // Generate content hash for all assets
     sourcemap: false,
     minify: 'terser',
     terserOptions: {
@@ -38,5 +39,5 @@ export default defineConfig(() => ({
         drop_console: true,
       },
     },
-  }
-}));
+  },
+});
