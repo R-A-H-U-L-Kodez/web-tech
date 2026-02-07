@@ -20,69 +20,55 @@ const Header: React.FC<HeaderProps> = ({ isPrivacyPage = false }) => {
             return;
         }
 
-        const sections = ['services', 'process', 'impact', 'contact'];
-        const observers: { [key: string]: IntersectionObserver } = {};
-        const visibilityMap: Record<string, { top: number; isIntersecting: boolean }> = {};
+        const sections = ['services', 'process', 'works', 'impact', 'contact'];
 
         const updateActiveSection = () => {
-            const visible = sections
-                .map((id) => ({ id, ...visibilityMap[id] }))
-                .filter((item) => item && item.isIntersecting);
-
-            if (visible.length === 0) {
+            if (window.scrollY < 100) {
+                setActiveSection('');
                 return;
             }
 
-            const positiveTop = visible.filter((item) => item.top >= 0);
-            const active = positiveTop.length > 0
-                ? positiveTop.sort((a, b) => a.top - b.top)[0]
-                : visible.sort((a, b) => b.top - a.top)[0];
+            const viewportThreshold = window.innerHeight * 0.35;
+            const candidates = sections
+                .map((id) => {
+                    const element = document.getElementById(id);
+                    if (!element) return null;
+                    const top = element.getBoundingClientRect().top;
+                    return { id, top };
+                })
+                .filter((item): item is { id: string; top: number } => item !== null);
+
+            if (candidates.length === 0) return;
+
+            const passed = candidates.filter((item) => item.top <= viewportThreshold);
+            const active = passed.length > 0
+                ? passed.sort((a, b) => b.top - a.top)[0]
+                : candidates.sort((a, b) => Math.abs(a.top) - Math.abs(b.top))[0];
 
             setActiveSection(active.id);
         };
 
-        const handleScrollTopReset = () => {
-            if (window.scrollY < 100) {
-                setActiveSection('');
-            }
+        const handleScroll = () => {
+            window.requestAnimationFrame(updateActiveSection);
         };
 
-        sections.forEach((section) => {
-            const element = document.getElementById(section);
-            if (!element) return;
-
-            const observer = new IntersectionObserver(
-                (entries) => {
-                    entries.forEach((entry) => {
-                        visibilityMap[section] = {
-                            top: entry.boundingClientRect.top,
-                            isIntersecting: entry.isIntersecting,
-                        };
-                    });
-                    updateActiveSection();
-                },
-                { threshold: [0, 0.25, 0.5, 0.75, 1], rootMargin: '-20% 0px -55% 0px' }
-            );
-
-            observer.observe(element);
-            observers[section] = observer;
-        });
-
-        window.addEventListener('scroll', handleScrollTopReset, { passive: true });
-        handleScrollTopReset();
+        window.addEventListener('scroll', handleScroll, { passive: true });
+        window.addEventListener('resize', updateActiveSection);
+        updateActiveSection();
 
         return () => {
-            Object.values(observers).forEach((observer) => observer.disconnect());
-            window.removeEventListener('scroll', handleScrollTopReset);
+            window.removeEventListener('scroll', handleScroll);
+            window.removeEventListener('resize', updateActiveSection);
         };
     }, [isPrivacyPage]);
 
-    const navItems = [
-      { label: "Services", href: isPrivacyPage ? "/#services" : "#services", id: "services" },
-      { label: "Process", href: isPrivacyPage ? "/#process" : "#process", id: "process" },
-      { label: "Impact", href: isPrivacyPage ? "/#impact" : "#impact", id: "impact" },
-      { label: "Contact", href: isPrivacyPage ? "/#contact" : "#contact", id: "contact" },
-    ];
+        const navItems = [
+            { label: "Services", href: isPrivacyPage ? "/#services" : "#services", id: "services" },
+            { label: "Process", href: isPrivacyPage ? "/#process" : "#process", id: "process" },
+            { label: "Works", href: isPrivacyPage ? "/#works" : "#works", id: "works" },
+            { label: "Impact", href: isPrivacyPage ? "/#impact" : "#impact", id: "impact" },
+            { label: "Contact", href: isPrivacyPage ? "/#contact" : "#contact", id: "contact" },
+        ];
 
     const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
         if (isPrivacyPage) return; // Let default browser behavior handle it
