@@ -1,9 +1,79 @@
 import '@/types';
 import * as React from 'react';
+import { useState } from 'react';
 import ElectricBorder from '@/components/ui/ElectricBorder';
 import AnimatedInView from '@/components/ui/AnimatedInView';
+import Icon from '@/components/ui/Icon';
 
 const ContactSection: React.FC = () => {
+    const [formData, setFormData] = useState({
+        fullName: '',
+        email: '',
+        company: '',
+        phone: '',
+        message: ''
+    });
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
+    const [submitMessage, setSubmitMessage] = useState('');
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        const { name, value } = e.target;
+        setFormData(prev => ({
+            ...prev,
+            [name]: value
+        }));
+    };
+
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        setIsSubmitting(true);
+        setSubmitStatus('idle');
+
+        try {
+            const response = await fetch(
+                'https://script.google.com/macros/s/AKfycbyJsF6Luu5q5ieK_1kES-gDE-isH9QLVIQXwzdWBHD5L-4d7XVE1esbNT4BWqcQOiFC/exec',
+                {
+                    method: 'POST',
+                    body: new URLSearchParams({
+                        fullName: formData.fullName,
+                        email: formData.email,
+                        company: formData.company,
+                        phone: formData.phone,
+                        message: formData.message,
+                    }),
+                }
+            );
+
+            if (response.ok) {
+                setSubmitStatus('success');
+                setSubmitMessage('Message sent successfully! We\'ll get back to you within 24 hours.');
+                setFormData({
+                    fullName: '',
+                    email: '',
+                    company: '',
+                    phone: '',
+                    message: ''
+                });
+                
+                // Reset status after 5 seconds
+                setTimeout(() => {
+                    setSubmitStatus('idle');
+                    setSubmitMessage('');
+                }, 5000);
+            } else {
+                setSubmitStatus('error');
+                setSubmitMessage('Failed to send message. Please try again.');
+            }
+        } catch (error) {
+            setSubmitStatus('error');
+            setSubmitMessage('An error occurred. Please try again later.');
+            console.error('Form submission error:', error);
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
     return (
         <section className="relative z-10 mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:py-24 scroll-mt-32" id="contact">
             <AnimatedInView className="relative overflow-hidden rounded-3xl bg-white/70 dark:bg-neutral-950 ring-1 ring-slate-200 dark:ring-white/10 backdrop-blur transition-colors duration-300">
@@ -22,7 +92,7 @@ const ContactSection: React.FC = () => {
                         <div className="mt-10 space-y-6 text-slate-600 dark:text-slate-300 transition-colors">
                             <div className="flex items-start gap-4 group">
                                 <div className="mt-1 flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-cyan-100/50 dark:bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 group-hover:scale-110 transition-transform duration-300 ring-1 ring-cyan-500/20">
-                                    <iconify-icon icon="solar:letter-linear" className="text-xl"></iconify-icon>
+                                    <Icon icon="solar:letter-linear" className="text-xl" />
                                 </div>
                                 <div>
                                     <h3 className="font-semibold text-slate-900 dark:text-white group-hover:text-cyan-600 dark:group-hover:text-cyan-400 transition-colors">Email</h3>
@@ -31,7 +101,7 @@ const ContactSection: React.FC = () => {
                             </div>
                             <div className="flex items-start gap-4 group">
                                 <div className="mt-1 flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-emerald-100/50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 group-hover:scale-110 transition-transform duration-300 ring-1 ring-emerald-500/20">
-                                    <iconify-icon icon="solar:phone-linear" className="text-xl"></iconify-icon>
+                                    <Icon icon="solar:phone-linear" className="text-xl" />
                                 </div>
                                 <div>
                                     <h3 className="font-semibold text-slate-900 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">Phone</h3>
@@ -40,7 +110,7 @@ const ContactSection: React.FC = () => {
                             </div>
                             <div className="flex items-start gap-4 group">
                                 <div className="mt-1 flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-sky-100/50 dark:bg-sky-500/10 text-sky-600 dark:text-sky-400 group-hover:scale-110 transition-transform duration-300 ring-1 ring-sky-500/20">
-                                    <iconify-icon icon="solar:clock-circle-linear" className="text-xl"></iconify-icon>
+                                    <Icon icon="solar:clock-circle-linear" className="text-xl" />
                                 </div>
                                 <div>
                                     <h3 className="font-semibold text-slate-900 dark:text-white group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors">Business Hours</h3>
@@ -59,11 +129,23 @@ const ContactSection: React.FC = () => {
                           chaos={0.12}
                           borderRadius={24}
                         >
-                            <form action="#" method="POST" className="space-y-5 rounded-3xl bg-white/80 dark:bg-black/40 p-8 sm:p-10 backdrop-blur-md transition-colors relative overflow-hidden">
+                            <form onSubmit={handleSubmit} className="space-y-5 rounded-3xl bg-white/80 dark:bg-black/40 p-8 sm:p-10 backdrop-blur-md transition-colors relative overflow-hidden">
                                 {/* Subtle noise overlay for texture */}
                                 <div className="pointer-events-none absolute inset-0 bg-white/40 dark:bg-white/5 opacity-50 mix-blend-overlay"></div>
                                 
                                 <div className="relative z-10 space-y-5">
+                                    {/* Status Message */}
+                                    {submitStatus === 'success' && (
+                                        <div className="rounded-lg bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 p-4">
+                                            <p className="text-sm text-emerald-800 dark:text-emerald-300">{submitMessage}</p>
+                                        </div>
+                                    )}
+                                    {submitStatus === 'error' && (
+                                        <div className="rounded-lg bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 p-4">
+                                            <p className="text-sm text-red-800 dark:text-red-300">{submitMessage}</p>
+                                        </div>
+                                    )}
+
                                     <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
                                         <div className="group relative z-0">
                                             {/* Animated Gradient Border */}
@@ -71,9 +153,12 @@ const ContactSection: React.FC = () => {
                                             
                                             <input 
                                                 type="text" 
-                                                name="full-name" 
+                                                name="fullName" 
                                                 id="full-name" 
                                                 placeholder=" "
+                                                value={formData.fullName}
+                                                onChange={handleChange}
+                                                required
                                                 className="peer block w-full rounded-xl border-0 bg-slate-100/80 dark:bg-white/5 dark:focus:bg-neutral-900/90 pt-7 pb-3 px-4 text-slate-900 dark:text-white shadow-sm ring-1 ring-inset ring-slate-200 dark:ring-white/10 focus:ring-0 sm:text-sm sm:leading-6 transition-all duration-300 placeholder:text-transparent hover:bg-slate-50 dark:hover:bg-white/10" 
                                             />
                                             <label 
@@ -95,6 +180,9 @@ const ContactSection: React.FC = () => {
                                                 name="email" 
                                                 id="email" 
                                                 placeholder=" "
+                                                value={formData.email}
+                                                onChange={handleChange}
+                                                required
                                                 className="peer block w-full rounded-xl border-0 bg-slate-100/80 dark:bg-white/5 dark:focus:bg-neutral-900/90 pt-7 pb-3 px-4 text-slate-900 dark:text-white shadow-sm ring-1 ring-inset ring-slate-200 dark:ring-white/10 focus:ring-0 sm:text-sm sm:leading-6 transition-all duration-300 placeholder:text-transparent hover:bg-slate-50 dark:hover:bg-white/10" 
                                             />
                                             <label 
@@ -118,6 +206,9 @@ const ContactSection: React.FC = () => {
                                             name="company" 
                                             id="company" 
                                             placeholder=" "
+                                            value={formData.company}
+                                            onChange={handleChange}
+                                            required
                                             className="peer block w-full rounded-xl border-0 bg-slate-100/80 dark:bg-white/5 dark:focus:bg-neutral-900/90 pt-7 pb-3 px-4 text-slate-900 dark:text-white shadow-sm ring-1 ring-inset ring-slate-200 dark:ring-white/10 focus:ring-0 sm:text-sm sm:leading-6 transition-all duration-300 placeholder:text-transparent hover:bg-slate-50 dark:hover:bg-white/10" 
                                         />
                                         <label 
@@ -140,6 +231,9 @@ const ContactSection: React.FC = () => {
                                             name="phone" 
                                             id="phone" 
                                             placeholder=" "
+                                            value={formData.phone}
+                                            onChange={handleChange}
+                                            required
                                             className="peer block w-full rounded-xl border-0 bg-slate-100/80 dark:bg-white/5 dark:focus:bg-neutral-900/90 pt-7 pb-3 px-4 text-slate-900 dark:text-white shadow-sm ring-1 ring-inset ring-slate-200 dark:ring-white/10 focus:ring-0 sm:text-sm sm:leading-6 transition-all duration-300 placeholder:text-transparent hover:bg-slate-50 dark:hover:bg-white/10" 
                                         />
                                         <label 
@@ -162,6 +256,9 @@ const ContactSection: React.FC = () => {
                                             id="message" 
                                             rows={4} 
                                             placeholder=" "
+                                            value={formData.message}
+                                            onChange={handleChange}
+                                            required
                                             className="peer block w-full rounded-xl border-0 bg-slate-100/80 dark:bg-white/5 dark:focus:bg-neutral-900/90 pt-7 pb-3 px-4 text-slate-900 dark:text-white shadow-sm ring-1 ring-inset ring-slate-200 dark:ring-white/10 focus:ring-0 sm:text-sm sm:leading-6 transition-all duration-300 placeholder:text-transparent resize-none hover:bg-slate-50 dark:hover:bg-white/10"
                                         ></textarea>
                                         <label 
@@ -177,26 +274,27 @@ const ContactSection: React.FC = () => {
 
                                     <AnimatedInView animationType="scale-in" delay={300} className="pt-2">
                                         <button 
-                                            type="submit" 
-                                            className="group relative flex w-full items-center justify-center gap-2 overflow-hidden rounded-xl bg-slate-900 dark:bg-white px-5 py-4 text-sm font-bold text-white dark:text-black shadow-lg shadow-cyan-500/20 transition-all duration-300 hover:scale-[1.02] hover:shadow-cyan-500/40 active:scale-[0.98]"
+                                            type="submit"
+                                            disabled={isSubmitting}
+                                            className="group relative flex w-full items-center justify-center gap-2 overflow-hidden rounded-xl bg-slate-900 dark:bg-white px-5 py-4 text-sm font-bold text-white dark:text-black shadow-lg shadow-cyan-500/20 transition-all duration-300 hover:scale-[1.02] hover:shadow-cyan-500/40 active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:scale-100"
                                         >
                                             {/* Hover State Background Gradient */}
                                             <div className="absolute inset-0 bg-gradient-to-r from-cyan-600 via-sky-600 to-blue-600 dark:from-cyan-400 dark:via-sky-400 dark:to-blue-400 opacity-0 transition-opacity duration-300 group-hover:opacity-100"></div>
                                             
                                             <span className="relative flex items-center gap-2 transition-transform duration-300 group-hover:-translate-x-1 z-10 text-white dark:group-hover:text-white dark:text-black">
-                                                Send Message
+                                                {isSubmitting ? 'Sending...' : 'Send Message'}
                                             </span>
 
                                             {/* Plane Icon Animation */}
                                             <div className="relative z-10 w-5 h-5 overflow-hidden text-white dark:group-hover:text-white dark:text-black">
-                                                <iconify-icon 
+                                                <Icon 
                                                     icon="solar:plain-3-bold" 
-                                                    className="absolute inset-0 text-lg transition-all duration-500 ease-in-out group-hover:translate-x-6 group-hover:-translate-y-6 group-hover:opacity-0"
-                                                ></iconify-icon>
-                                                <iconify-icon 
+                                                    className="absolute inset-0 text-lg transition-all duration-500 ease-in-out group-hover:translate-x-6 group-hover:-translate-y-6 group-hover:opacity-0 disabled:group-hover:translate-x-0 disabled:group-hover:-translate-y-0 disabled:group-hover:opacity-100"
+                                                />
+                                                <Icon 
                                                     icon="solar:plain-3-bold" 
                                                     className="absolute inset-0 text-lg -translate-x-6 translate-y-6 opacity-0 transition-all duration-500 ease-in-out group-hover:translate-x-0 group-hover:translate-y-0 group-hover:opacity-100"
-                                                ></iconify-icon>
+                                                />
                                             </div>
                                         </button>
                                     </AnimatedInView>
