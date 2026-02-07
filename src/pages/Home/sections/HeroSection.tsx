@@ -103,11 +103,23 @@ const HeroSection: React.FC = () => {
                         </h1>
                         
                         <AnimatedInView animationType="scale-in" delay={200}>
-                            <p className="mx-auto mt-6 sm:mt-8 max-w-3xl text-base sm:text-lg font-medium leading-relaxed text-slate-600 dark:text-slate-300 transition-colors duration-300 px-2 space-y-1" style={{ textShadow: '0 1px 10px rgba(34, 211, 238, 0.15)' }}>
-                                <div className="text-slate-900 dark:text-white font-semibold">Elite Web Design & Development Services for Businesses</div>
-                                <div className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-600 to-sky-600 dark:from-cyan-400 dark:to-sky-400 font-semibold">That Refuse to Blend In</div>
-                                <div className="text-slate-600 dark:text-slate-300">Aesthetically stunning, blazing-fast, and built to convert with <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-600 to-sky-600 dark:from-cyan-400 dark:to-sky-400 font-semibold">premium craftsmanship</span></div>
-                            </p>
+                            <div
+                                className="mx-auto mt-6 sm:mt-8 max-w-3xl text-base sm:text-lg font-medium leading-relaxed text-slate-600 dark:text-slate-300 transition-colors duration-300 px-2 space-y-1"
+                                style={{ textShadow: '0 1px 10px rgba(34, 211, 238, 0.15)' }}
+                            >
+                                <p className="text-slate-900 dark:text-white font-semibold">
+                                    Elite Web Design & Development Services for Businesses
+                                </p>
+                                <p className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-600 to-sky-600 dark:from-cyan-400 dark:to-sky-400 font-semibold">
+                                    That Refuse to Blend In
+                                </p>
+                                <p className="text-slate-600 dark:text-slate-300">
+                                    Aesthetically stunning, blazing-fast, and built to convert with{' '}
+                                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-600 to-sky-600 dark:from-cyan-400 dark:to-sky-400 font-semibold">
+                                        premium craftsmanship
+                                    </span>
+                                </p>
+                            </div>
                         </AnimatedInView>
 
                         <AnimatedInView delay={300}>
