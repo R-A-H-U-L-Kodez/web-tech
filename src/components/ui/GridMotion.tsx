@@ -7,6 +7,19 @@ interface GridMotionProps {
 }
 
 const TOTAL_ITEMS = 28;
+const SAFE_RELATIVE_IMAGE = /^\/works\/[A-Za-z0-9._-]+\.(png|jpe?g|webp|gif|avif)$/i;
+
+const isSafeImageUrl = (value: string): boolean => {
+  if (SAFE_RELATIVE_IMAGE.test(value)) return true;
+
+  try {
+    const base = typeof window !== 'undefined' ? window.location.origin : 'http://localhost';
+    const url = new URL(value, base);
+    return url.protocol === 'http:' || url.protocol === 'https:';
+  } catch {
+    return false;
+  }
+};
 
 const GridMotion: React.FC<GridMotionProps> = ({ items = [], gradientColor = 'black' }) => {
   const rowRefs = React.useRef<(HTMLDivElement | null)[]>([]);
@@ -25,8 +38,6 @@ const GridMotion: React.FC<GridMotionProps> = ({ items = [], gradientColor = 'bl
 
   React.useEffect(() => {
     if (typeof window === 'undefined') return;
-
-    gsap.ticker.lagSmoothing(0);
 
     const updateMotion = (): void => {
       const maxMoveAmount = 300;
@@ -73,7 +84,6 @@ const GridMotion: React.FC<GridMotionProps> = ({ items = [], gradientColor = 'bl
       }}
       onMouseLeave={() => {
         pausedRef.current = false;
-        startTimeRef.current = null;
       }}
     >
       <section
@@ -98,10 +108,10 @@ const GridMotion: React.FC<GridMotionProps> = ({ items = [], gradientColor = 'bl
                 return (
                   <div key={itemIndex} className="relative">
                     <div className="relative flex h-full w-full items-center justify-center overflow-hidden rounded-[10px] bg-[#111] text-[1.5rem] text-white">
-                      {typeof content === 'string' && (content.startsWith('http') || content.startsWith('/')) ? (
+                      {typeof content === 'string' && isSafeImageUrl(content) ? (
                         <div
                           className="absolute left-0 top-0 h-full w-full bg-cover bg-center"
-                          style={{ backgroundImage: `url(${content})` }}
+                          style={{ backgroundImage: `url("${encodeURI(content)}")` }}
                         ></div>
                       ) : (
                         <div className="z-[1] p-4 text-center">{content}</div>
