@@ -22,11 +22,11 @@ export default defineConfig({
         manualChunks: {
           'react-vendor': ['react', 'react-dom', 'react-router-dom'],
           'pages': [
-            './src/pages/About/AboutPage.tsx',
-            './src/pages/Resources/ResourcesPage.tsx',
-            './src/pages/Careers/CareersPage.tsx',
-            './src/pages/Legal/PrivacyPolicyPage.tsx',
-            './src/pages/Legal/TermsOfServicePage.tsx'
+            './pages/About/AboutPage.tsx',
+            './pages/Resources/ResourcesPage.tsx',
+            './pages/Careers/CareersPage.tsx',
+            './pages/Legal/PrivacyPolicyPage.tsx',
+            './pages/Legal/TermsOfServicePage.tsx'
           ]
         }
       }
